@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div class="container">
+        <div class="panel-body">
+            <div class="form-group col-md-5">
+                <label>Nombre</label>
+                <input type="text" name="Name" id="Name" class="form-control" placeholder="Nombre del Cliente" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>Apellido</label>
+                <input type="text" name="LastName" id="LastName" class="form-control" placeholder="Apellido del Cliente" />
+            </div>
+            <div class="form-group col-md-5">
+                <input type="button" name="submitButton" id="btnSave" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+    </div><hr />
+    <div class="container">
+        <table id="tblCustomer" class="table table-bordered table-striped table-responsive table-hover">
+            <thead>
+                <tr>
+                    <th align="left">ID</th>
+                    <th align="left">Nombre</th>
+                    <th align="left">Apellido</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    @section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            LoadData();
+            $("#btnSave").click(function () {
+                var std = {};
+                std.Name = $("#Name").val();
+                std.LastName= $("#LastName").val();
+                console.log("STD OBJECT", std);
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("createCustomer")',
+                    data: '{student: ' + JSON.stringify(std) + '}',
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {
+                        LoadData();
+                    },
+                    error: function () {
+                        alert("Error while inserting data");
+                    }
+                });
+                return false;
+            });
+        });
+        function LoadData() {
+            $("#tblCustomer tbody tr").remove();
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetCustomer")',
+                    dataType: "json",
+                    success: function (data) {
+                        $.each(data, function (i, item) {
+                            console.log(data.List.Name);
+                            var rows = "<tr>"
+                                + "</tr>";
+                            $('#tblCustomer tbody').append(rows);
+                        });
+                    },
+                    error: function (ex) {
+                        var r = jQuery.parseJSON(ex.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StrackTrace);
+                        alert("ExceptionType : " + r.ExceptionType);
+                    }
+                });
+            } catch (e) { console.log(e);}S
+            return false;
+        }
+    </script>
+    }
+
+</body>
+</html>

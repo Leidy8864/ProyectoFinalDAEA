@@ -1,0 +1,89 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div class="container">
+        <div class="container">Busquedas</div>
+        <div>
+            <div class="form-group">
+                <label>Codigo de Factura</label>
+                <input type="text" id="code" name="code" placeholder="Escribir Codigo de Factura"/>
+            </div>
+            <div class="form-group">
+                <label>Nombre de Vendedor</label>
+                <input type="text" id="employee" name="employee" placeholder="Escribir Nombre del Vendedor" />
+            </div>
+            <div class="form-group">
+                <label>Nombre de Cliente</label>
+                <input type="text" id="customer" name="customer" placeholder="Escribir Nombre del Cliente" />
+            </div>
+        </div>
+    </div>
+
+ @section Scripts{
+
+    <script type="text/javascript">
+        $(function () {
+            LoadData();
+            $("#BuscarCODE").click(function () {
+                var std = {};
+                std.Code = $("#Code").val();
+                console.log("STD OBJECT", std);
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("getByBillID")',
+                    data: std,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {
+                        LoadData();
+                    },
+                    error: function () {
+                        alert("Error while inserting data");
+                    }
+                });
+                return false;
+            });
+        });
+
+
+
+
+        function LoadData() {
+            $("#tblCustomer tbody tr").remove();
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetCustomer")',
+                    dataType: "json",
+                    success: function (data) {
+                        $.each(data, function (i, item) {
+                            console.log(data.List.Name);
+                            var rows = "<tr>"
+                                + "</tr>";
+                            $('#tblCustomer tbody').append(rows);
+                        });
+                    },
+                    error: function (ex) {
+                        var r = jQuery.parseJSON(ex.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StrackTrace);
+                        alert("ExceptionType : " + r.ExceptionType);
+                    }
+                });
+            } catch (e) { console.log(e);}S
+            return false;
+        }
+    </script>
+
+}
+</body>
+</html>
